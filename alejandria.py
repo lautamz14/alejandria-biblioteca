@@ -26,7 +26,7 @@ def registrar_libro(libros):
     categoria = input("Ingrese la categoría del libro: ")
     stock_total = int(input("Ingrese la cantidad de ejemplares: "))
 
-    libro = {
+    datos_libro = { #Para este commit modificamos el nombre del diccionario libro ya que podia prestarse a confunsion y por lo tanto un error de typeo con la lista de los libros guardados
         "id": id_libro,
         "titulo": titulo,
         "autor": autor,
@@ -36,10 +36,28 @@ def registrar_libro(libros):
         "veces_prestado": 0 
     }
 
-    libros.append(libro)
+    libros.append(datos_libro)
 
     print("\nLibro registrado correctamente.")
     print("ID asignado", id_libro)
+
+def listar_libros(libros):
+    print("\n--- LISTADO DE LIBROS ---")
+
+    if len(libros) == 0:
+        print("No hay libros registrados.")
+    else:
+        for datos_libro in libros:
+            print("\nID:", datos_libro["id"])
+            print("Título:", datos_libro["titulo"])
+            print("Autor:", datos_libro["autor"])
+            print("Categoría:", datos_libro["categoria"])
+            print("Stock total:", datos_libro["stock_total"])
+            print("Stock disponible:", datos_libro["stock_disponible"])
+            print("Veces prestado:", datos_libro["veces_prestado"])
+            print("\n----------------------------------------")
+    
+    print("\nCantidad total de libros registrados:", len(libros))
 
 def main():
     libros = []
@@ -56,8 +74,7 @@ def main():
         elif opcion == "2":
             print("\nFunción registrar usuario en desarrollo...")
         elif opcion == "3":
-            print("\nFunción listar libros en desarrollo...")
-            print("Cantidad de libros registrados:", len(libros))
+            listar_libros(libros)
         elif opcion == "4":
             print("\nFunción buscar libro en desarrollo...")
         elif opcion == "5":
