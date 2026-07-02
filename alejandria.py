@@ -18,6 +18,9 @@ def mostrar_menu():
     print("========================================")
 
 def main():
+    libros = []
+    usuarios = []
+    
     opcion = ""
 
     while opcion != "9":
@@ -30,6 +33,7 @@ def main():
             print("\nFunción registrar usuario en desarrollo...")
         elif opcion == "3":
             print("\nFunción listar libros en desarrollo...")
+            print("Cantidad de libros registrados:", len(libros))
         elif opcion == "4":
             print("\nFunción buscar libro en desarrollo...")
         elif opcion == "5":
@@ -40,6 +44,8 @@ def main():
             print("\nFunción ver préstamos activos en desarrollo...")
         elif opcion == "8":
             print("\nFunción ver estadísticas en desarrollo...")
+            print("Cantidad de libros registrados:", len(libros))
+            print("Cantidad de usuarios registrados:", len(usuarios))
         elif opcion == "9":
             print("\nSaliendo del sistema Alejandría...")
         else:
