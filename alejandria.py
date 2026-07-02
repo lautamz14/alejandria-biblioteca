@@ -17,6 +17,30 @@ def mostrar_menu():
     print("9. Salir")
     print("========================================")
 
+def registrar_libro(libros):
+    print("\n--- REGISTRO DE LIBRO ---")
+
+    id_libro = len(libros) + 1
+    titulo = input("Ingrese el título del libro: ")
+    autor = input("Ingrese el autor del libro: ")
+    categoria = input("Ingrese la categoría del libro: ")
+    stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+
+    libro = {
+        "id": id_libro,
+        "titulo": titulo,
+        "autor": autor,
+        "categoria": categoria,
+        "stock_total": stock_total,
+        "stock_disponible": stock_total, # Le asignamos la misma variable del total por el momento pero cuando desarrollemos la funcion de prestamos y devoluciones ese valor va a cambiar
+        "veces_prestado": 0 
+    }
+
+    libros.append(libro)
+
+    print("\nLibro registrado correctamente.")
+    print("ID asignado", id_libro)
+
 def main():
     libros = []
     usuarios = []
@@ -28,7 +52,7 @@ def main():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            print("\nFunción registrar libro en desarrollo...")
+            registrar_libro(libros)
         elif opcion == "2":
             print("\nFunción registrar usuario en desarrollo...")
         elif opcion == "3":
