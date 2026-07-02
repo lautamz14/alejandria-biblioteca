@@ -59,6 +59,34 @@ def listar_libros(libros):
     
     print("\nCantidad total de libros registrados:", len(libros))
 
+def obtener_libro(libros, id_buscado):
+    for datos_libro in libros:
+        if datos_libro["id"] == id_buscado:
+            return datos_libro
+    return None
+
+def buscar_libro(libros):
+    print("\n--- BUSQUEDA DE LIBRO ---")
+
+    if len(libros) == 0:
+        print("No hay libros registrados.")
+    else:
+        id_buscado = int(input("Ingrese el ID del libro a buscar: "))
+    
+    libro_encontrado = obtener_libro(libros, id_buscado)
+
+    if libro_encontrado is None:
+        print("No se encontró un libro con ese ID.")
+    else:
+        print("\nLibro encontrado:")
+        print("ID:", libro_encontrado["id"])
+        print("Título:", libro_encontrado["titulo"])
+        print("Autor:", libro_encontrado["autor"])
+        print("Categoría:", libro_encontrado["categoria"])
+        print("Stock total:", libro_encontrado["stock_total"])
+        print("Stock disponible:", libro_encontrado["stock_disponible"])
+        print("Veces prestado:", libro_encontrado["veces_prestado"])
+
 def main():
     libros = []
     usuarios = []
@@ -76,7 +104,7 @@ def main():
         elif opcion == "3":
             listar_libros(libros)
         elif opcion == "4":
-            print("\nFunción buscar libro en desarrollo...")
+            buscar_libro(libros)
         elif opcion == "5":
             print("\nFunción realizar préstamo en desarrollo...")
         elif opcion == "6":
