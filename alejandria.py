@@ -235,6 +235,50 @@ def realizar_prestamo(libros, usuarios, prestamos):
     print("Día límite de devolución:", dia_limite)
     print("Stock disponible actualizado:", libro_encontrado["stock_disponible"])
 
+def obtener_prestamo(prestamos, id_buscado):
+    for datos_prestamo in prestamos:
+        if datos_prestamo["id_prestamo"] == id_buscado:
+            return datos_prestamo
+
+    return None
+
+def registrar_devolucion(libros, prestamos):
+    print("\n--- REGISTRAR DEVOLUCIÓN ---")
+
+    if len(prestamos) == 0:
+        print("No hay préstamos registrados.")
+        return
+
+    id_prestamo = int(input("Ingrese el ID del préstamo a devolver: "))
+    prestamo_encontrado = obtener_prestamo(prestamos, id_prestamo)
+
+    if prestamo_encontrado is None:
+        print("Error: no existe un préstamo con ese ID.")
+        return
+
+    if prestamo_encontrado["estado"] == "DEVUELTO":
+        print("Error: este préstamo ya fue devuelto anteriormente.")
+        return
+
+    dia_devolucion = validar_dia("Ingrese el día de devolución: ")
+
+    prestamo_encontrado["dia_devolucion"] = dia_devolucion
+    prestamo_encontrado["estado"] = "DEVUELTO"
+
+    libro_devuelto = obtener_libro(libros, prestamo_encontrado["id_libro"])
+
+    if libro_devuelto is not None:
+        libro_devuelto["stock_disponible"] += 1
+
+    print("\nDevolución registrada correctamente.")
+    print("ID del préstamo:", prestamo_encontrado["id_prestamo"])
+    print("ID del libro devuelto:", prestamo_encontrado["id_libro"])
+    print("Día de devolución:", dia_devolucion)
+
+    if libro_devuelto is not None:
+        print("Libro:", libro_devuelto["titulo"])
+        print("Stock disponible actualizado:", libro_devuelto["stock_disponible"])
+
 def main():
     libros = []
     usuarios = []
@@ -257,7 +301,7 @@ def main():
         elif opcion == "5":
             realizar_prestamo(libros, usuarios, prestamos)
         elif opcion == "6":
-            print("\nFunción registrar devolución en desarrollo...")
+            registrar_devolucion(libros, prestamos)
         elif opcion == "7":
             print("\nFunción ver préstamos activos en desarrollo...")
         elif opcion == "8":
@@ -272,3 +316,6 @@ def main():
 # Proceso
 
 main()
+# En primera instancia de prueba las funciones de prestamo y devolucion con stock actualizado funcionan perfectamente, pero probando un poco mnas encontre algunos errores:
+# Por mas que dos personas distintas pidan el mismo libro al devolver el libro se completa todo el stock por mas que la persona haya devuelto un solo libro, hay que arreglar eso
+# Si es que quieren mejorar tambien se tiene que mantener el DNI de las personas en un limite de 8 caracteres pero podria ser que se complique mas el codigo
