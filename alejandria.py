@@ -1,5 +1,4 @@
 # BIBLIOTECA ALEJANDRIA
-# Por cuestiones organizativas de primera instancia vamos a separar el coddigo en ambiente y proceso para tener una estructura mas clara
 # Ambiente
 
 def mostrar_menu():
@@ -162,10 +161,60 @@ def registrar_usuario(usuarios):
         print("\nUsuario registrado correctamente.")
         print("DNI:", dni)
 
+def realizar_prestamo(libros, usuarios, prestamos):
+    print("\n--- REALIZAR PRÉSTAMO ---")
+
+    if len(usuarios) == 0:
+        print("No hay usuarios registrados.")
+        return
+
+    if len(libros) == 0:
+        print("No hay libros registrados.")
+        return
+
+    dni = validar_texto("Ingrese el DNI del usuario: ")
+    usuario_encontrado = obtener_usuario(usuarios, dni)
+
+    if usuario_encontrado is None:
+        print("Error: no existe un usuario registrado con ese DNI.")
+        return
+
+    id_libro = int(input("Ingrese el ID del libro a prestar: "))
+    libro_encontrado = obtener_libro(libros, id_libro)
+
+    if libro_encontrado is None:
+        print("Error: no existe un libro registrado con ese ID.")
+        return
+
+    dia_prestamo = int(input("Ingrese el día del préstamo: "))
+    dia_limite = dia_prestamo + 7
+
+    id_prestamo = len(prestamos) + 1
+
+    datos_prestamo = {
+        "id_prestamo": id_prestamo,
+        "dni_usuario": dni,
+        "id_libro": id_libro,
+        "dia_prestamo": dia_prestamo,
+        "dia_limite": dia_limite,
+        "dia_devolucion": 0,
+        "estado": "ACTIVO",
+        "multa": 0
+    }
+
+    prestamos.append(datos_prestamo)
+
+    print("\nPréstamo registrado correctamente.")
+    print("ID del préstamo:", id_prestamo)
+    print("Usuario:", usuario_encontrado["nombre"], usuario_encontrado["apellido"])
+    print("Libro:", libro_encontrado["titulo"])
+    print("Día del préstamo:", dia_prestamo)
+    print("Día límite de devolución:", dia_limite)
 
 def main():
     libros = []
     usuarios = []
+    prestamos = []
 
     opcion = ""
 
@@ -182,7 +231,7 @@ def main():
         elif opcion == "4":
             buscar_libro(libros)
         elif opcion == "5":
-            print("\nFunción realizar préstamo en desarrollo...")
+            realizar_prestamo(libros, usuarios, prestamos)
         elif opcion == "6":
             print("\nFunción registrar devolución en desarrollo...")
         elif opcion == "7":
@@ -197,6 +246,5 @@ def main():
             print("\nOpción inválida. Intente nuevamente.")
 
 # Proceso
-
 
 main()
