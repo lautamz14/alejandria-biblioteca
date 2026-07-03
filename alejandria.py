@@ -36,6 +36,22 @@ def validar_stock():
 
     return stock_total
 
+def validar_dia(mensaje):
+    dia = int(input(mensaje))
+
+    while dia < 1 or dia > 30:
+        print("Error: el día debe estar entre 1 y 30.")
+        dia = int(input(mensaje))
+
+    return dia
+
+def calcular_dia_limite(dia_prestamo):
+    dia_limite = dia_prestamo + 7
+
+    if dia_limite > 30:
+        dia_limite -= 30
+
+    return dia_limite
 
 def libro_repetido(libros, titulo, autor):
     for datos_libro in libros:
@@ -186,8 +202,12 @@ def realizar_prestamo(libros, usuarios, prestamos):
         print("Error: no existe un libro registrado con ese ID.")
         return
 
-    dia_prestamo = int(input("Ingrese el día del préstamo: "))
-    dia_limite = dia_prestamo + 7
+    if libro_encontrado["stock_disponible"] <= 0:
+        print("Error: no hay ejemplares disponibles de este libro.")
+        return
+
+    dia_prestamo = validar_dia("Ingrese el día del préstamo: ")
+    dia_limite = calcular_dia_limite(dia_prestamo)
 
     id_prestamo = len(prestamos) + 1
 
@@ -204,12 +224,16 @@ def realizar_prestamo(libros, usuarios, prestamos):
 
     prestamos.append(datos_prestamo)
 
+    libro_encontrado["stock_disponible"] -= 1
+    libro_encontrado["veces_prestado"] += 1
+
     print("\nPréstamo registrado correctamente.")
     print("ID del préstamo:", id_prestamo)
     print("Usuario:", usuario_encontrado["nombre"], usuario_encontrado["apellido"])
     print("Libro:", libro_encontrado["titulo"])
     print("Día del préstamo:", dia_prestamo)
     print("Día límite de devolución:", dia_limite)
+    print("Stock disponible actualizado:", libro_encontrado["stock_disponible"])
 
 def main():
     libros = []
