@@ -1,4 +1,4 @@
-# BIBLIOTECA ALEJANDRIA 
+# BIBLIOTECA ALEJANDRIA
 # Por cuestiones organizativas de primera instancia vamos a separar el coddigo en ambiente y proceso para tener una estructura mas clara
 # Ambiente
 
@@ -17,6 +17,7 @@ def mostrar_menu():
     print("9. Salir")
     print("========================================")
 
+
 def registrar_libro(libros):
     print("\n--- REGISTRO DE LIBRO ---")
 
@@ -26,20 +27,22 @@ def registrar_libro(libros):
     categoria = input("Ingrese la categoría del libro: ")
     stock_total = int(input("Ingrese la cantidad de ejemplares: "))
 
-    datos_libro = { #Para este commit modificamos el nombre del diccionario libro ya que podia prestarse a confunsion y por lo tanto un error de typeo con la lista de los libros guardados
+    datos_libro = {
         "id": id_libro,
         "titulo": titulo,
         "autor": autor,
         "categoria": categoria,
         "stock_total": stock_total,
-        "stock_disponible": stock_total, # Le asignamos la misma variable del total por el momento pero cuando desarrollemos la funcion de prestamos y devoluciones ese valor va a cambiar
-        "veces_prestado": 0 
+        # Le asignamos la misma variable del total por el momento pero cuando desarrollemos la funcion de prestamos y devoluciones ese valor va a cambiar
+        "stock_disponible": stock_total,
+        "veces_prestado": 0
     }
 
     libros.append(datos_libro)
 
     print("\nLibro registrado correctamente.")
     print("ID asignado", id_libro)
+
 
 def listar_libros(libros):
     print("\n--- LISTADO DE LIBROS ---")
@@ -56,14 +59,16 @@ def listar_libros(libros):
             print("Stock disponible:", datos_libro["stock_disponible"])
             print("Veces prestado:", datos_libro["veces_prestado"])
             print("\n----------------------------------------")
-    
+
     print("\nCantidad total de libros registrados:", len(libros))
+
 
 def obtener_libro(libros, id_buscado):
     for datos_libro in libros:
         if datos_libro["id"] == id_buscado:
             return datos_libro
     return None
+
 
 def buscar_libro(libros):
     print("\n--- BUSQUEDA DE LIBRO ---")
@@ -72,7 +77,7 @@ def buscar_libro(libros):
         print("No hay libros registrados.")
     else:
         id_buscado = int(input("Ingrese el ID del libro a buscar: "))
-    
+
     libro_encontrado = obtener_libro(libros, id_buscado)
 
     if libro_encontrado is None:
@@ -87,10 +92,30 @@ def buscar_libro(libros):
         print("Stock disponible:", libro_encontrado["stock_disponible"])
         print("Veces prestado:", libro_encontrado["veces_prestado"])
 
+
+def registrar_usuario(usuarios):
+    print("\n--- REGISTRO DE USUARIO ---")
+
+    dni = input("Ingrese el DNI del usuario: ")
+    nombre = input("Ingrese el nombre del usuario: ")
+    apellido = input("Ingrese el apellido del usuario: ")
+
+    datos_usuario = {
+        "dni": dni,
+        "nombre": nombre,
+        "apellido": apellido
+    }
+
+    usuarios.append(datos_usuario)
+
+    print("\nUsuario registrado correctamente.")
+    print("DNI:", dni)
+
+
 def main():
     libros = []
     usuarios = []
-    
+
     opcion = ""
 
     while opcion != "9":
@@ -100,7 +125,7 @@ def main():
         if opcion == "1":
             registrar_libro(libros)
         elif opcion == "2":
-            print("\nFunción registrar usuario en desarrollo...")
+            registrar_usuario(usuarios)
         elif opcion == "3":
             listar_libros(libros)
         elif opcion == "4":
@@ -121,5 +146,6 @@ def main():
             print("\nOpción inválida. Intente nuevamente.")
 
 # Proceso
+
 
 main()
