@@ -18,30 +18,65 @@ def mostrar_menu():
     print("========================================")
 
 
+def validar_texto(mensaje):
+    texto = input(mensaje).strip()
+
+    while texto == "":
+        print("Error: el campo no puede quedar vacío.")
+        texto = input(mensaje).strip()
+
+    return texto
+
+
+def validar_stock():
+    stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+
+    while stock_total <= 0:
+        print("Error: el stock debe ser mayor a 0.")
+        stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+
+    return stock_total
+
+
+def libro_repetido(libros, titulo, autor):
+    for datos_libro in libros:
+        if (
+            datos_libro["titulo"].lower() == titulo.lower()
+            and datos_libro["autor"].lower() == autor.lower()
+        ):
+            return True
+
+    return False
+
+
 def registrar_libro(libros):
     print("\n--- REGISTRO DE LIBRO ---")
 
     id_libro = len(libros) + 1
-    titulo = input("Ingrese el título del libro: ")
-    autor = input("Ingrese el autor del libro: ")
-    categoria = input("Ingrese la categoría del libro: ")
-    stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+    titulo = validar_texto("Ingrese el título del libro: ")
+    autor = validar_texto("Ingrese el autor del libro: ")
+    categoria = validar_texto("Ingrese la categoría del libro: ")
 
-    datos_libro = {
-        "id": id_libro,
-        "titulo": titulo,
-        "autor": autor,
-        "categoria": categoria,
-        "stock_total": stock_total,
-        # Le asignamos la misma variable del total por el momento pero cuando desarrollemos la funcion de prestamos y devoluciones ese valor va a cambiar
-        "stock_disponible": stock_total,
-        "veces_prestado": 0
-    }
+    if libro_repetido(libros, titulo, autor):
+        print("\nError: ya existe un libro registrado con ese título y autor.")
+    else:
+        stock_total = validar_stock()
 
-    libros.append(datos_libro)
+        datos_libro = {
+            "id": id_libro,
+            "titulo": titulo,
+            "autor": autor,
+            "categoria": categoria,
+            "stock_total": stock_total,
+            # Le asignamos la misma variable del total por el momento pero cuando desarrollemos la funcion de prestamos y devoluciones ese valor va a cambiar
+            "stock_disponible": stock_total,
+            "veces_prestado": 0
+        }
 
-    print("\nLibro registrado correctamente.")
-    print("ID asignado", id_libro)
+        libros.append(datos_libro)
+
+        print("\nLibro registrado correctamente.")
+        print("ID asignado:", id_libro)
 
 
 def listar_libros(libros):
@@ -75,8 +110,9 @@ def buscar_libro(libros):
 
     if len(libros) == 0:
         print("No hay libros registrados.")
-    else:
-        id_buscado = int(input("Ingrese el ID del libro a buscar: "))
+        return
+
+    id_buscado = int(input("Ingrese el ID del libro a buscar: "))
 
     libro_encontrado = obtener_libro(libros, id_buscado)
 
@@ -93,23 +129,38 @@ def buscar_libro(libros):
         print("Veces prestado:", libro_encontrado["veces_prestado"])
 
 
+# Aprovechamos esta oportunidad de corregir errores para poder agregar la funcionalidad de obtener usuarios similar a la de obtener libros
+def obtener_usuario(usuarios, dni_buscado):
+    for datos_usuario in usuarios:
+        if datos_usuario["dni"] == dni_buscado:
+            return datos_usuario
+
+    return None
+
+
 def registrar_usuario(usuarios):
     print("\n--- REGISTRO DE USUARIO ---")
 
-    dni = input("Ingrese el DNI del usuario: ")
-    nombre = input("Ingrese el nombre del usuario: ")
-    apellido = input("Ingrese el apellido del usuario: ")
+    dni = validar_texto("Ingrese el DNI del usuario: ")
 
-    datos_usuario = {
-        "dni": dni,
-        "nombre": nombre,
-        "apellido": apellido
-    }
+    usuario_encontrado = obtener_usuario(usuarios, dni)
 
-    usuarios.append(datos_usuario)
+    if usuario_encontrado is not None:
+        print("\nError: ya existe un usuario registrado con ese DNI.")
+    else:
+        nombre = validar_texto("Ingrese el nombre del usuario: ")
+        apellido = validar_texto("Ingrese el apellido del usuario: ")
 
-    print("\nUsuario registrado correctamente.")
-    print("DNI:", dni)
+        datos_usuario = {
+            "dni": dni,
+            "nombre": nombre,
+            "apellido": apellido
+        }
+
+        usuarios.append(datos_usuario)
+
+        print("\nUsuario registrado correctamente.")
+        print("DNI:", dni)
 
 
 def main():
