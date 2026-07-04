@@ -45,16 +45,6 @@ def validar_texto(mensaje):
     return texto
 
 
-def validar_stock():
-    stock_total = int(input("Ingrese la cantidad de ejemplares: "))
-
-    while stock_total <= 0:
-        print("Error: el stock debe ser mayor a 0.")
-        stock_total = int(input("Ingrese la cantidad de ejemplares: "))
-
-    return stock_total
-
-
 def validar_dia(mensaje):
     dia = int(input(mensaje))
 
@@ -141,6 +131,90 @@ def guardar_prestamos(prestamos):
             archivo_prestamos.write(linea)
 
 
+def cargar_libros():
+    libros = []
+
+    with open(ARCHIVO_LIBROS, "a", encoding="utf-8") as archivo_libros:
+        pass
+
+    with open(ARCHIVO_LIBROS, "r", encoding="utf-8") as archivo_libros:
+        for linea in archivo_libros:
+            linea = linea.strip()
+
+            if linea != "":
+                datos = linea.split("|")
+
+                if len(datos) == 7:
+                    datos_libro = {
+                        "id": int(datos[0]),
+                        "titulo": datos[1],
+                        "autor": datos[2],
+                        "categoria": datos[3],
+                        "stock_total": int(datos[4]),
+                        "stock_disponible": int(datos[5]),
+                        "veces_prestado": int(datos[6])
+                    }
+
+                    libros.append(datos_libro)
+
+    return libros
+
+
+def cargar_usuarios():
+    usuarios = []
+
+    with open(ARCHIVO_USUARIOS, "a", encoding="utf-8") as archivo_usuarios:
+        pass
+
+    with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as archivo_usuarios:
+        for linea in archivo_usuarios:
+            linea = linea.strip()
+
+            if linea != "":
+                datos = linea.split("|")
+
+                if len(datos) == 3:
+                    datos_usuario = {
+                        "dni": datos[0],
+                        "nombre": datos[1],
+                        "apellido": datos[2]
+                    }
+
+                    usuarios.append(datos_usuario)
+
+    return usuarios
+
+
+def cargar_prestamos():
+    prestamos = []
+
+    with open(ARCHIVO_PRESTAMOS, "a", encoding="utf-8") as archivo_prestamos:
+        pass
+
+    with open(ARCHIVO_PRESTAMOS, "r", encoding="utf-8") as archivo_prestamos:
+        for linea in archivo_prestamos:
+            linea = linea.strip()
+
+            if linea != "":
+                datos = linea.split("|")
+
+                if len(datos) == 8:
+                    datos_prestamo = {
+                        "id_prestamo": int(datos[0]),
+                        "dni_usuario": datos[1],
+                        "id_libro": int(datos[2]),
+                        "dia_prestamo": int(datos[3]),
+                        "dia_limite": int(datos[4]),
+                        "dia_devolucion": int(datos[5]),
+                        "estado": datos[6],
+                        "multa": int(datos[7])
+                    }
+
+                    prestamos.append(datos_prestamo)
+
+    return prestamos
+
+
 def libro_repetido(libros, titulo, autor):
     for datos_libro in libros:
         if (
@@ -150,17 +224,6 @@ def libro_repetido(libros, titulo, autor):
             return True
 
     return False
-
-
-
-def validar_texto(mensaje):
-    texto = input(mensaje).strip()
-
-    while texto == "":
-        print("Error: el campo no puede quedar vacío.")
-        texto = input(mensaje).strip()
-
-    return texto
 
 
 def validar_stock():
@@ -171,58 +234,6 @@ def validar_stock():
         stock_total = int(input("Ingrese la cantidad de ejemplares: "))
 
     return stock_total
-
-
-def validar_dia(mensaje):
-    dia = int(input(mensaje))
-
-    while dia < 1 or dia > 30:
-        print("Error: el día debe estar entre 1 y 30.")
-        dia = int(input(mensaje))
-
-    return dia
-
-
-def calcular_dia_limite(dia_prestamo):
-    dia_limite = dia_prestamo + 7
-
-    if dia_limite > 30:
-        dia_limite -= 30
-
-    return dia_limite
-
-
-def calcular_dias_transcurridos(dia_prestamo, dia_devolucion):
-    if dia_devolucion >= dia_prestamo:
-        return dia_devolucion - dia_prestamo
-
-    return (30 - dia_prestamo) + dia_devolucion
-
-
-def calcular_multa(dia_prestamo, dia_devolucion):
-    dias_transcurridos = calcular_dias_transcurridos(
-        dia_prestamo,
-        dia_devolucion
-    )
-
-    dias_demora = dias_transcurridos - 7
-
-    if dias_demora <= 0:
-        return 0, 0
-
-    multa = dias_demora * MULTA_DIARIA
-    return multa, dias_demora
-
-
-def libro_repetido(libros, titulo, autor):
-    for datos_libro in libros:
-        if (
-            datos_libro["titulo"].lower() == titulo.lower()
-            and datos_libro["autor"].lower() == autor.lower()
-        ):
-            return True
-
-    return False
 
 
 def registrar_libro(libros):
@@ -564,9 +575,9 @@ def mostrar_estadisticas(libros, usuarios, prestamos):
 
 
 def main():
-    libros = []
-    usuarios = []
-    prestamos = []
+    libros = cargar_libros()
+    usuarios = cargar_usuarios()
+    prestamos = cargar_prestamos()
 
     opcion = ""
 
