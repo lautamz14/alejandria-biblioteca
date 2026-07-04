@@ -1,7 +1,11 @@
 # BIBLIOTECA ALEJANDRIA
 # Ambiente
 MULTA_DIARIA = 5000
+<<<<<<< HEAD
 ARCHIVO_LIBROS = "libros.txt"
+=======
+
+>>>>>>> 87424ca3bb62f7536c1ee08be9269da98b550e46
 
 def mostrar_menu():
     print(r"""
@@ -122,6 +126,79 @@ def libro_repetido(libros, titulo, autor):
     return False
 
 
+
+def validar_texto(mensaje):
+    texto = input(mensaje).strip()
+
+    while texto == "":
+        print("Error: el campo no puede quedar vacío.")
+        texto = input(mensaje).strip()
+
+    return texto
+
+
+def validar_stock():
+    stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+
+    while stock_total <= 0:
+        print("Error: el stock debe ser mayor a 0.")
+        stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+
+    return stock_total
+
+
+def validar_dia(mensaje):
+    dia = int(input(mensaje))
+
+    while dia < 1 or dia > 30:
+        print("Error: el día debe estar entre 1 y 30.")
+        dia = int(input(mensaje))
+
+    return dia
+
+
+def calcular_dia_limite(dia_prestamo):
+    dia_limite = dia_prestamo + 7
+
+    if dia_limite > 30:
+        dia_limite -= 30
+
+    return dia_limite
+
+
+def calcular_dias_transcurridos(dia_prestamo, dia_devolucion):
+    if dia_devolucion >= dia_prestamo:
+        return dia_devolucion - dia_prestamo
+
+    return (30 - dia_prestamo) + dia_devolucion
+
+
+def calcular_multa(dia_prestamo, dia_devolucion):
+    dias_transcurridos = calcular_dias_transcurridos(
+        dia_prestamo,
+        dia_devolucion
+    )
+
+    dias_demora = dias_transcurridos - 7
+
+    if dias_demora <= 0:
+        return 0, 0
+
+    multa = dias_demora * MULTA_DIARIA
+    return multa, dias_demora
+
+
+def libro_repetido(libros, titulo, autor):
+    for datos_libro in libros:
+        if (
+            datos_libro["titulo"].lower() == titulo.lower()
+            and datos_libro["autor"].lower() == autor.lower()
+        ):
+            return True
+
+    return False
+
+
 def registrar_libro(libros):
     print("\n--- REGISTRO DE LIBRO ---")
 
@@ -147,7 +224,10 @@ def registrar_libro(libros):
         }
 
         libros.append(datos_libro)
+<<<<<<< HEAD
         guardar_libros(libros)
+=======
+>>>>>>> 87424ca3bb62f7536c1ee08be9269da98b550e46
 
         print("\nLibro registrado correctamente.")
         print("ID asignado:", id_libro)
@@ -285,6 +365,7 @@ def realizar_prestamo(libros, usuarios, prestamos):
 
     libro_encontrado["stock_disponible"] -= 1
     libro_encontrado["veces_prestado"] += 1
+<<<<<<< HEAD
     guardar_libros(libros)
 
     print("\nPréstamo registrado correctamente.")
@@ -294,6 +375,18 @@ def realizar_prestamo(libros, usuarios, prestamos):
     print("Día del préstamo:", dia_prestamo)
     print("Día límite de devolución:", dia_limite)
     print("Stock disponible actualizado:", libro_encontrado["stock_disponible"])
+=======
+
+    print("\nPréstamo registrado correctamente.")
+    print("ID del préstamo:", id_prestamo)
+    print("Usuario:", usuario_encontrado["nombre"],
+          usuario_encontrado["apellido"])
+    print("Libro:", libro_encontrado["titulo"])
+    print("Día del préstamo:", dia_prestamo)
+    print("Día límite de devolución:", dia_limite)
+    print("Stock disponible actualizado:",
+          libro_encontrado["stock_disponible"])
+>>>>>>> 87424ca3bb62f7536c1ee08be9269da98b550e46
 
 
 def obtener_prestamo(prestamos, id_buscado):
@@ -337,7 +430,10 @@ def registrar_devolucion(libros, prestamos):
 
     if libro_devuelto is not None:
         libro_devuelto["stock_disponible"] += 1
+<<<<<<< HEAD
         guardar_libros(libros)
+=======
+>>>>>>> 87424ca3bb62f7536c1ee08be9269da98b550e46
 
     print("\nDevolución registrada correctamente.")
     print("ID del préstamo:", prestamo_encontrado["id_prestamo"])
@@ -348,7 +444,12 @@ def registrar_devolucion(libros, prestamos):
 
     if libro_devuelto is not None:
         print("Libro:", libro_devuelto["titulo"])
+<<<<<<< HEAD
         print("Stock disponible actualizado:", libro_devuelto["stock_disponible"])
+=======
+        print("Stock disponible actualizado:",
+              libro_devuelto["stock_disponible"])
+>>>>>>> 87424ca3bb62f7536c1ee08be9269da98b550e46
 
     if multa > 0:
         print("Días de demora:", dias_demora)
@@ -454,7 +555,12 @@ def mostrar_estadisticas(libros, usuarios, prestamos):
             print("Libro más solicitado: todavía no hay préstamos de libros.")
         else:
             print("Libro más solicitado:", libro_mas_solicitado["titulo"])
+<<<<<<< HEAD
             print("Cantidad de préstamos del libro:", libro_mas_solicitado["veces_prestado"])
+=======
+            print("Cantidad de préstamos del libro:",
+                  libro_mas_solicitado["veces_prestado"])
+>>>>>>> 87424ca3bb62f7536c1ee08be9269da98b550e46
 
 
 def main():
@@ -490,5 +596,6 @@ def main():
             print("\nOpción inválida. Intente nuevamente.")
 
 # Proceso
+
 
 main()
