@@ -2,6 +2,7 @@
 # Ambiente
 MULTA_DIARIA = 5000
 
+
 def mostrar_menu():
     print("\n========================================")
     print("       ALEJANDRÍA - BIBLIOTECA")
@@ -37,6 +38,7 @@ def validar_stock():
 
     return stock_total
 
+
 def validar_dia(mensaje):
     dia = int(input(mensaje))
 
@@ -46,6 +48,7 @@ def validar_dia(mensaje):
 
     return dia
 
+
 def calcular_dia_limite(dia_prestamo):
     dia_limite = dia_prestamo + 7
 
@@ -53,6 +56,7 @@ def calcular_dia_limite(dia_prestamo):
         dia_limite -= 30
 
     return dia_limite
+
 
 def calcular_dias_transcurridos(dia_prestamo, dia_devolucion):
     if dia_devolucion >= dia_prestamo:
@@ -74,6 +78,7 @@ def calcular_multa(dia_prestamo, dia_devolucion):
 
     multa = dias_demora * MULTA_DIARIA
     return multa, dias_demora
+
 
 def libro_repetido(libros, titulo, autor):
     for datos_libro in libros:
@@ -251,11 +256,14 @@ def realizar_prestamo(libros, usuarios, prestamos):
 
     print("\nPréstamo registrado correctamente.")
     print("ID del préstamo:", id_prestamo)
-    print("Usuario:", usuario_encontrado["nombre"], usuario_encontrado["apellido"])
+    print("Usuario:", usuario_encontrado["nombre"],
+          usuario_encontrado["apellido"])
     print("Libro:", libro_encontrado["titulo"])
     print("Día del préstamo:", dia_prestamo)
     print("Día límite de devolución:", dia_limite)
-    print("Stock disponible actualizado:", libro_encontrado["stock_disponible"])
+    print("Stock disponible actualizado:",
+          libro_encontrado["stock_disponible"])
+
 
 def obtener_prestamo(prestamos, id_buscado):
     for datos_prestamo in prestamos:
@@ -263,6 +271,7 @@ def obtener_prestamo(prestamos, id_buscado):
             return datos_prestamo
 
     return None
+
 
 def registrar_devolucion(libros, prestamos):
     print("\n--- REGISTRAR DEVOLUCIÓN ---")
@@ -307,13 +316,15 @@ def registrar_devolucion(libros, prestamos):
 
     if libro_devuelto is not None:
         print("Libro:", libro_devuelto["titulo"])
-        print("Stock disponible actualizado:", libro_devuelto["stock_disponible"])
+        print("Stock disponible actualizado:",
+              libro_devuelto["stock_disponible"])
 
     if multa > 0:
         print("Días de demora:", dias_demora)
         print("Multa aplicada: $", multa)
     else:
         print("No corresponde aplicar multa.")
+
 
 def listar_prestamos_activos(libros, usuarios, prestamos):
     print("\n--- PRÉSTAMOS ACTIVOS ---")
@@ -363,6 +374,59 @@ def listar_prestamos_activos(libros, usuarios, prestamos):
     else:
         print("Cantidad de préstamos activos:", cantidad_activos)
 
+
+def mostrar_estadisticas(libros, usuarios, prestamos):
+    print("\n--- ESTADÍSTICAS GENERALES ---")
+
+    cantidad_libros = len(libros)
+    cantidad_usuarios = len(usuarios)
+    cantidad_prestamos = len(prestamos)
+
+    prestamos_activos = 0
+    prestamos_devueltos = 0
+    total_multas = 0
+
+    stock_total_general = 0
+    stock_disponible_general = 0
+
+    for datos_libro in libros:
+        stock_total_general += datos_libro["stock_total"]
+        stock_disponible_general += datos_libro["stock_disponible"]
+
+    for datos_prestamo in prestamos:
+        if datos_prestamo["estado"] == "ACTIVO":
+            prestamos_activos += 1
+        elif datos_prestamo["estado"] == "DEVUELTO":
+            prestamos_devueltos += 1
+
+        total_multas += datos_prestamo["multa"]
+
+    print("Cantidad de libros registrados:", cantidad_libros)
+    print("Cantidad de usuarios registrados:", cantidad_usuarios)
+    print("Cantidad de préstamos registrados:", cantidad_prestamos)
+    print("Préstamos activos:", prestamos_activos)
+    print("Préstamos devueltos:", prestamos_devueltos)
+    print("Stock total de ejemplares:", stock_total_general)
+    print("Stock disponible total:", stock_disponible_general)
+    print("Total acumulado en multas: $", total_multas)
+
+    if len(libros) == 0:
+        print("Libro más solicitado: no hay libros registrados.")
+    else:
+        libro_mas_solicitado = libros[0]
+
+        for datos_libro in libros:
+            if datos_libro["veces_prestado"] > libro_mas_solicitado["veces_prestado"]:
+                libro_mas_solicitado = datos_libro
+
+        if libro_mas_solicitado["veces_prestado"] == 0:
+            print("Libro más solicitado: todavía no hay préstamos de libros.")
+        else:
+            print("Libro más solicitado:", libro_mas_solicitado["titulo"])
+            print("Cantidad de préstamos del libro:",
+                  libro_mas_solicitado["veces_prestado"])
+
+
 def main():
     libros = []
     usuarios = []
@@ -389,14 +453,13 @@ def main():
         elif opcion == "7":
             listar_prestamos_activos(libros, usuarios, prestamos)
         elif opcion == "8":
-            print("\nFunción ver estadísticas en desarrollo...")
-            print("Cantidad de libros registrados:", len(libros))
-            print("Cantidad de usuarios registrados:", len(usuarios))
+            mostrar_estadisticas(libros, usuarios, prestamos)
         elif opcion == "9":
             print("\nSaliendo del sistema Alejandría...")
         else:
             print("\nOpción inválida. Intente nuevamente.")
 
 # Proceso
+
 
 main()
