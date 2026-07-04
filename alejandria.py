@@ -2,7 +2,6 @@
 # Ambiente
 MULTA_DIARIA = 5000
 
-
 def mostrar_menu():
     print("\n========================================")
     print("       ALEJANDRÍA - BIBLIOTECA")
@@ -55,25 +54,6 @@ def calcular_dia_limite(dia_prestamo):
 
     return dia_limite
 
-def validar_dia(mensaje):
-    dia = int(input(mensaje))
-
-    while dia < 1 or dia > 30:
-        print("Error: el día debe estar entre 1 y 30.")
-        dia = int(input(mensaje))
-
-    return dia
-
-
-def calcular_dia_limite(dia_prestamo):
-    dia_limite = dia_prestamo + 7
-
-    if dia_limite > 30:
-        dia_limite -= 30
-
-    return dia_limite
-
-
 def calcular_dias_transcurridos(dia_prestamo, dia_devolucion):
     if dia_devolucion >= dia_prestamo:
         return dia_devolucion - dia_prestamo
@@ -94,7 +74,6 @@ def calcular_multa(dia_prestamo, dia_devolucion):
 
     multa = dias_demora * MULTA_DIARIA
     return multa, dias_demora
-
 
 def libro_repetido(libros, titulo, autor):
     for datos_libro in libros:
@@ -219,6 +198,7 @@ def registrar_usuario(usuarios):
         print("\nUsuario registrado correctamente.")
         print("DNI:", dni)
 
+
 def realizar_prestamo(libros, usuarios, prestamos):
     print("\n--- REALIZAR PRÉSTAMO ---")
 
@@ -304,112 +284,6 @@ def registrar_devolucion(libros, prestamos):
 
     dia_devolucion = validar_dia("Ingrese el día de devolución: ")
 
-    prestamo_encontrado["dia_devolucion"] = dia_devolucion
-    prestamo_encontrado["estado"] = "DEVUELTO"
-
-    libro_devuelto = obtener_libro(libros, prestamo_encontrado["id_libro"])
-
-    if libro_devuelto is not None:
-        libro_devuelto["stock_disponible"] += 1
-
-    print("\nDevolución registrada correctamente.")
-    print("ID del préstamo:", prestamo_encontrado["id_prestamo"])
-    print("ID del libro devuelto:", prestamo_encontrado["id_libro"])
-    print("Día de devolución:", dia_devolucion)
-
-    if libro_devuelto is not None:
-        print("Libro:", libro_devuelto["titulo"])
-        print("Stock disponible actualizado:", libro_devuelto["stock_disponible"])
-
-def realizar_prestamo(libros, usuarios, prestamos):
-    print("\n--- REALIZAR PRÉSTAMO ---")
-
-    if len(usuarios) == 0:
-        print("No hay usuarios registrados.")
-        return
-
-    if len(libros) == 0:
-        print("No hay libros registrados.")
-        return
-
-    dni = validar_texto("Ingrese el DNI del usuario: ")
-    usuario_encontrado = obtener_usuario(usuarios, dni)
-
-    if usuario_encontrado is None:
-        print("Error: no existe un usuario registrado con ese DNI.")
-        return
-
-    id_libro = int(input("Ingrese el ID del libro a prestar: "))
-    libro_encontrado = obtener_libro(libros, id_libro)
-
-    if libro_encontrado is None:
-        print("Error: no existe un libro registrado con ese ID.")
-        return
-
-    if libro_encontrado["stock_disponible"] <= 0:
-        print("Error: no hay ejemplares disponibles de este libro.")
-        return
-
-    dia_prestamo = validar_dia("Ingrese el día del préstamo: ")
-    dia_limite = calcular_dia_limite(dia_prestamo)
-
-    id_prestamo = len(prestamos) + 1
-
-    datos_prestamo = {
-        "id_prestamo": id_prestamo,
-        "dni_usuario": dni,
-        "id_libro": id_libro,
-        "dia_prestamo": dia_prestamo,
-        "dia_limite": dia_limite,
-        "dia_devolucion": 0,
-        "estado": "ACTIVO",
-        "multa": 0
-    }
-
-    prestamos.append(datos_prestamo)
-
-    libro_encontrado["stock_disponible"] -= 1
-    libro_encontrado["veces_prestado"] += 1
-
-    print("\nPréstamo registrado correctamente.")
-    print("ID del préstamo:", id_prestamo)
-    print("Usuario:", usuario_encontrado["nombre"],
-          usuario_encontrado["apellido"])
-    print("Libro:", libro_encontrado["titulo"])
-    print("Día del préstamo:", dia_prestamo)
-    print("Día límite de devolución:", dia_limite)
-    print("Stock disponible actualizado:",
-          libro_encontrado["stock_disponible"])
-
-
-def obtener_prestamo(prestamos, id_buscado):
-    for datos_prestamo in prestamos:
-        if datos_prestamo["id_prestamo"] == id_buscado:
-            return datos_prestamo
-
-    return None
-
-
-def registrar_devolucion(libros, prestamos):
-    print("\n--- REGISTRAR DEVOLUCIÓN ---")
-
-    if len(prestamos) == 0:
-        print("No hay préstamos registrados.")
-        return
-
-    id_prestamo = int(input("Ingrese el ID del préstamo a devolver: "))
-    prestamo_encontrado = obtener_prestamo(prestamos, id_prestamo)
-
-    if prestamo_encontrado is None:
-        print("Error: no existe un préstamo con ese ID.")
-        return
-
-    if prestamo_encontrado["estado"] == "DEVUELTO":
-        print("Error: este préstamo ya fue devuelto anteriormente.")
-        return
-
-    dia_devolucion = validar_dia("Ingrese el día de devolución: ")
-
     multa, dias_demora = calcular_multa(
         prestamo_encontrado["dia_prestamo"],
         dia_devolucion
@@ -433,8 +307,7 @@ def registrar_devolucion(libros, prestamos):
 
     if libro_devuelto is not None:
         print("Libro:", libro_devuelto["titulo"])
-        print("Stock disponible actualizado:",
-              libro_devuelto["stock_disponible"])
+        print("Stock disponible actualizado:", libro_devuelto["stock_disponible"])
 
     if multa > 0:
         print("Días de demora:", dias_demora)
@@ -442,6 +315,53 @@ def registrar_devolucion(libros, prestamos):
     else:
         print("No corresponde aplicar multa.")
 
+def listar_prestamos_activos(libros, usuarios, prestamos):
+    print("\n--- PRÉSTAMOS ACTIVOS ---")
+
+    if len(prestamos) == 0:
+        print("No hay préstamos registrados.")
+        return
+
+    cantidad_activos = 0
+
+    for datos_prestamo in prestamos:
+        if datos_prestamo["estado"] == "ACTIVO":
+            cantidad_activos += 1
+
+            usuario_encontrado = obtener_usuario(
+                usuarios,
+                datos_prestamo["dni_usuario"]
+            )
+
+            libro_encontrado = obtener_libro(
+                libros,
+                datos_prestamo["id_libro"]
+            )
+
+            print("\nID préstamo:", datos_prestamo["id_prestamo"])
+            print("DNI usuario:", datos_prestamo["dni_usuario"])
+
+            if usuario_encontrado is not None:
+                print(
+                    "Usuario:",
+                    usuario_encontrado["nombre"],
+                    usuario_encontrado["apellido"]
+                )
+
+            print("ID libro:", datos_prestamo["id_libro"])
+
+            if libro_encontrado is not None:
+                print("Libro:", libro_encontrado["titulo"])
+
+            print("Día del préstamo:", datos_prestamo["dia_prestamo"])
+            print("Día límite de devolución:", datos_prestamo["dia_limite"])
+            print("Estado:", datos_prestamo["estado"])
+            print("----------------------------------------")
+
+    if cantidad_activos == 0:
+        print("No hay préstamos activos.")
+    else:
+        print("Cantidad de préstamos activos:", cantidad_activos)
 
 def main():
     libros = []
@@ -467,7 +387,7 @@ def main():
         elif opcion == "6":
             registrar_devolucion(libros, prestamos)
         elif opcion == "7":
-            print("\nFunción ver préstamos activos en desarrollo...")
+            listar_prestamos_activos(libros, usuarios, prestamos)
         elif opcion == "8":
             print("\nFunción ver estadísticas en desarrollo...")
             print("Cantidad de libros registrados:", len(libros))
@@ -480,6 +400,3 @@ def main():
 # Proceso
 
 main()
-# En primera instancia de prueba las funciones de prestamo y devolucion con stock actualizado funcionan perfectamente, pero probando un poco mnas encontre algunos errores:
-# Por mas que dos personas distintas pidan el mismo libro al devolver el libro se completa todo el stock por mas que la persona haya devuelto un solo libro, hay que arreglar eso
-# Si es que quieren mejorar tambien se tiene que mantener el DNI de las personas en un limite de 8 caracteres pero podria ser que se complique mas el codigo
