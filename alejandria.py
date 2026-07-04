@@ -3,6 +3,7 @@
 MULTA_DIARIA = 5000
 ARCHIVO_LIBROS = "libros.txt"
 ARCHIVO_USUARIOS = "usuarios.txt"
+ARCHIVO_PRESTAMOS = "prestamos.txt"
 
 def mostrar_menu():
     print(r"""
@@ -33,7 +34,6 @@ def mostrar_menu():
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 """)
 
-# Decidimos entre todos los integrantes incorporar en este commit, una mejora visual en el menu del programa para tener una interfaz mas agradable para el usuario
 
 def validar_texto(mensaje):
     texto = input(mensaje).strip()
@@ -95,7 +95,7 @@ def calcular_multa(dia_prestamo, dia_devolucion):
     multa = dias_demora * MULTA_DIARIA
     return multa, dias_demora
 
-# Para el guardado y formateo de ambos archivos la IA nos recomendo que añadamos el encoding utf-8 ya que nos permite poder conservar algunos caracteres especiales como los acentos y que no interfieran en el guardado de datos
+
 def guardar_libros(libros):
     with open(ARCHIVO_LIBROS, "w", encoding="utf-8") as archivo_libros:
         for datos_libro in libros:
@@ -122,6 +122,23 @@ def guardar_usuarios(usuarios):
             )
 
             archivo_usuarios.write(linea)
+
+
+def guardar_prestamos(prestamos):
+    with open(ARCHIVO_PRESTAMOS, "w", encoding="utf-8") as archivo_prestamos:
+        for datos_prestamo in prestamos:
+            linea = (
+                str(datos_prestamo["id_prestamo"]) + "|" +
+                datos_prestamo["dni_usuario"] + "|" +
+                str(datos_prestamo["id_libro"]) + "|" +
+                str(datos_prestamo["dia_prestamo"]) + "|" +
+                str(datos_prestamo["dia_limite"]) + "|" +
+                str(datos_prestamo["dia_devolucion"]) + "|" +
+                datos_prestamo["estado"] + "|" +
+                str(datos_prestamo["multa"]) + "\n"
+            )
+
+            archivo_prestamos.write(linea)
 
 
 def libro_repetido(libros, titulo, autor):
@@ -369,6 +386,7 @@ def realizar_prestamo(libros, usuarios, prestamos):
     }
 
     prestamos.append(datos_prestamo)
+    guardar_prestamos(prestamos)
 
     libro_encontrado["stock_disponible"] -= 1
     libro_encontrado["veces_prestado"] += 1
@@ -419,6 +437,7 @@ def registrar_devolucion(libros, prestamos):
     prestamo_encontrado["dia_devolucion"] = dia_devolucion
     prestamo_encontrado["estado"] = "DEVUELTO"
     prestamo_encontrado["multa"] = multa
+    guardar_prestamos(prestamos)
 
     libro_devuelto = obtener_libro(libros, prestamo_encontrado["id_libro"])
 
@@ -577,6 +596,5 @@ def main():
             print("\nOpción inválida. Intente nuevamente.")
 
 # Proceso
-
 
 main()
