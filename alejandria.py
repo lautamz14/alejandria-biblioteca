@@ -44,13 +44,25 @@ def validar_texto(mensaje):
 
     return texto
 
+def validar_entero(mensaje):
+    numero_valido = False
+    numero = 0
+
+    while not numero_valido:
+        try:
+            numero = int(input(mensaje))
+            numero_valido = True
+        except ValueError:
+            print("Error: debe ingresar un número entero.")
+
+    return numero
 
 def validar_dia(mensaje):
-    dia = int(input(mensaje))
+    dia = validar_entero(mensaje)
 
     while dia < 1 or dia > 30:
         print("Error: el día debe estar entre 1 y 30.")
-        dia = int(input(mensaje))
+        dia = validar_entero(mensaje)
 
     return dia
 
@@ -227,11 +239,11 @@ def libro_repetido(libros, titulo, autor):
 
 
 def validar_stock():
-    stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+    stock_total = validar_entero("Ingrese la cantidad de ejemplares: ")
 
     while stock_total <= 0:
         print("Error: el stock debe ser mayor a 0.")
-        stock_total = int(input("Ingrese la cantidad de ejemplares: "))
+        stock_total = validar_entero("Ingrese la cantidad de ejemplares: ")
 
     return stock_total
 
@@ -300,7 +312,7 @@ def buscar_libro(libros):
         print("No hay libros registrados.")
         return
 
-    id_buscado = int(input("Ingrese el ID del libro a buscar: "))
+    id_buscado = validar_entero("Ingrese el ID del libro a buscar: ")
 
     libro_encontrado = obtener_libro(libros, id_buscado)
 
@@ -369,7 +381,7 @@ def realizar_prestamo(libros, usuarios, prestamos):
         print("Error: no existe un usuario registrado con ese DNI.")
         return
 
-    id_libro = int(input("Ingrese el ID del libro a prestar: "))
+    id_libro = validar_entero("Ingrese el ID del libro a prestar: ")
     libro_encontrado = obtener_libro(libros, id_libro)
 
     if libro_encontrado is None:
@@ -427,7 +439,7 @@ def registrar_devolucion(libros, prestamos):
         print("No hay préstamos registrados.")
         return
 
-    id_prestamo = int(input("Ingrese el ID del préstamo a devolver: "))
+    id_prestamo = validar_entero("Ingrese el ID del préstamo a devolver: ")
     prestamo_encontrado = obtener_prestamo(prestamos, id_prestamo)
 
     if prestamo_encontrado is None:
