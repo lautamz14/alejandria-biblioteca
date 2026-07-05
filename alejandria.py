@@ -38,8 +38,12 @@ def mostrar_menu():
 def validar_texto(mensaje):
     texto = input(mensaje).strip()
 
-    while texto == "":
-        print("Error: el campo no puede quedar vacío.")
+    while texto == "" or "|" in texto:
+        if texto == "":
+            print("Error: el campo no puede quedar vacío.")
+        else:
+            print("Error: no se puede usar el carácter |.")
+
         texto = input(mensaje).strip()
 
     return texto
@@ -57,6 +61,37 @@ def validar_entero(mensaje):
 
     return numero
 
+
+def validar_entero_positivo(mensaje):
+    numero = validar_entero(mensaje)
+
+    while numero <= 0:
+        print("Error: debe ingresar un número mayor a 0.")
+        numero = validar_entero(mensaje)
+
+    return numero
+
+
+def validar_mes(mensaje):
+    mes = validar_entero(mensaje)
+
+    while mes < 1 or mes > 12:
+        print("Error: el mes debe estar entre 1 y 12.")
+        mes = validar_entero(mensaje)
+
+    return mes
+
+
+def validar_dni(mensaje):
+    dni = input(mensaje).strip()
+
+    while len(dni) != 8 or not dni.isdigit():
+        print("Error: el DNI debe contener exactamente 8 números.")
+        dni = input(mensaje).strip()
+
+    return dni
+
+
 def validar_dia(mensaje):
     dia = validar_entero(mensaje)
 
@@ -67,26 +102,41 @@ def validar_dia(mensaje):
     return dia
 
 
-def calcular_dia_limite(dia_prestamo):
+def calcular_fecha_limite(dia_prestamo, mes_prestamo):
     dia_limite = dia_prestamo + 7
+    mes_limite = mes_prestamo
 
     if dia_limite > 30:
         dia_limite -= 30
+        mes_limite += 1
 
-    return dia_limite
+        if mes_limite > 12:
+            mes_limite = 1
 
-
-def calcular_dias_transcurridos(dia_prestamo, dia_devolucion):
-    if dia_devolucion >= dia_prestamo:
-        return dia_devolucion - dia_prestamo
-
-    return (30 - dia_prestamo) + dia_devolucion
+    return dia_limite, mes_limite
 
 
-def calcular_multa(dia_prestamo, dia_devolucion):
+def convertir_fecha_a_dias(dia, mes):
+    return (mes - 1) * 30 + dia
+
+
+
+def calcular_dias_transcurridos(dia_prestamo, mes_prestamo, dia_devolucion, mes_devolucion):
+    fecha_prestamo = convertir_fecha_a_dias(dia_prestamo, mes_prestamo)
+    fecha_devolucion = convertir_fecha_a_dias(dia_devolucion, mes_devolucion)
+
+    if fecha_devolucion < fecha_prestamo:
+        fecha_devolucion += 360
+
+    return fecha_devolucion - fecha_prestamo
+
+
+def calcular_multa(dia_prestamo, mes_prestamo, dia_devolucion, mes_devolucion):
     dias_transcurridos = calcular_dias_transcurridos(
         dia_prestamo,
-        dia_devolucion
+        mes_prestamo,
+        dia_devolucion,
+        mes_devolucion
     )
 
     dias_demora = dias_transcurridos - 7
@@ -134,8 +184,11 @@ def guardar_prestamos(prestamos):
                 datos_prestamo["dni_usuario"] + "|" +
                 str(datos_prestamo["id_libro"]) + "|" +
                 str(datos_prestamo["dia_prestamo"]) + "|" +
+                str(datos_prestamo["mes_prestamo"]) + "|" +
                 str(datos_prestamo["dia_limite"]) + "|" +
+                str(datos_prestamo["mes_limite"]) + "|" +
                 str(datos_prestamo["dia_devolucion"]) + "|" +
+                str(datos_prestamo["mes_devolucion"]) + "|" +
                 datos_prestamo["estado"] + "|" +
                 str(datos_prestamo["multa"]) + "\n"
             )
@@ -210,16 +263,19 @@ def cargar_prestamos():
             if linea != "":
                 datos = linea.split("|")
 
-                if len(datos) == 8:
+                if len(datos) == 11:
                     datos_prestamo = {
                         "id_prestamo": int(datos[0]),
                         "dni_usuario": datos[1],
                         "id_libro": int(datos[2]),
                         "dia_prestamo": int(datos[3]),
-                        "dia_limite": int(datos[4]),
-                        "dia_devolucion": int(datos[5]),
-                        "estado": datos[6],
-                        "multa": int(datos[7])
+                        "mes_prestamo": int(datos[4]),
+                        "dia_limite": int(datos[5]),
+                        "mes_limite": int(datos[6]),
+                        "dia_devolucion": int(datos[7]),
+                        "mes_devolucion": int(datos[8]),
+                        "estado": datos[9],
+                        "multa": int(datos[10])
                     }
 
                     prestamos.append(datos_prestamo)
@@ -248,10 +304,20 @@ def validar_stock():
     return stock_total
 
 
+def obtener_siguiente_id(lista, clave):
+    mayor_id = 0
+
+    for elemento in lista:
+        if elemento[clave] > mayor_id:
+            mayor_id = elemento[clave]
+
+    return mayor_id + 1
+
+
 def registrar_libro(libros):
     print("\n--- REGISTRO DE LIBRO ---")
 
-    id_libro = len(libros) + 1
+    id_libro = obtener_siguiente_id(libros, "id")
     titulo = validar_texto("Ingrese el título del libro: ")
     autor = validar_texto("Ingrese el autor del libro: ")
     categoria = validar_texto("Ingrese la categoría del libro: ")
@@ -267,7 +333,6 @@ def registrar_libro(libros):
             "autor": autor,
             "categoria": categoria,
             "stock_total": stock_total,
-            # Le asignamos la misma variable del total por el momento pero cuando desarrollemos la funcion de prestamos y devoluciones ese valor va a cambiar
             "stock_disponible": stock_total,
             "veces_prestado": 0
         }
@@ -312,7 +377,7 @@ def buscar_libro(libros):
         print("No hay libros registrados.")
         return
 
-    id_buscado = validar_entero("Ingrese el ID del libro a buscar: ")
+    id_buscado = validar_entero_positivo("Ingrese el ID del libro a buscar: ")
 
     libro_encontrado = obtener_libro(libros, id_buscado)
 
@@ -340,7 +405,7 @@ def obtener_usuario(usuarios, dni_buscado):
 def registrar_usuario(usuarios):
     print("\n--- REGISTRO DE USUARIO ---")
 
-    dni = validar_texto("Ingrese el DNI del usuario: ")
+    dni = validar_dni("Ingrese el DNI del usuario: ")
 
     usuario_encontrado = obtener_usuario(usuarios, dni)
 
@@ -374,14 +439,14 @@ def realizar_prestamo(libros, usuarios, prestamos):
         print("No hay libros registrados.")
         return
 
-    dni = validar_texto("Ingrese el DNI del usuario: ")
+    dni = validar_dni("Ingrese el DNI del usuario: ")
     usuario_encontrado = obtener_usuario(usuarios, dni)
 
     if usuario_encontrado is None:
         print("Error: no existe un usuario registrado con ese DNI.")
         return
 
-    id_libro = validar_entero("Ingrese el ID del libro a prestar: ")
+    id_libro = validar_entero_positivo("Ingrese el ID del libro a prestar: ")
     libro_encontrado = obtener_libro(libros, id_libro)
 
     if libro_encontrado is None:
@@ -393,19 +458,24 @@ def realizar_prestamo(libros, usuarios, prestamos):
         return
 
     dia_prestamo = validar_dia("Ingrese el día del préstamo: ")
-    dia_limite = calcular_dia_limite(dia_prestamo)
+    mes_prestamo = validar_mes("Ingrese el mes del préstamo: ")
 
-    id_prestamo = len(prestamos) + 1
+    dia_limite, mes_limite = calcular_fecha_limite(dia_prestamo, mes_prestamo)
+
+    id_prestamo = obtener_siguiente_id(prestamos, "id_prestamo")
 
     datos_prestamo = {
-        "id_prestamo": id_prestamo,
-        "dni_usuario": dni,
-        "id_libro": id_libro,
-        "dia_prestamo": dia_prestamo,
-        "dia_limite": dia_limite,
-        "dia_devolucion": 0,
-        "estado": "ACTIVO",
-        "multa": 0
+    "id_prestamo": id_prestamo,
+    "dni_usuario": dni,
+    "id_libro": id_libro,
+    "dia_prestamo": dia_prestamo,
+    "mes_prestamo": mes_prestamo,
+    "dia_limite": dia_limite,
+    "mes_limite": mes_limite,
+    "dia_devolucion": 0,
+    "mes_devolucion": 0,
+    "estado": "ACTIVO",
+    "multa": 0
     }
 
     prestamos.append(datos_prestamo)
@@ -420,7 +490,7 @@ def realizar_prestamo(libros, usuarios, prestamos):
     print("Usuario:", usuario_encontrado["nombre"], usuario_encontrado["apellido"])
     print("Libro:", libro_encontrado["titulo"])
     print("Día del préstamo:", dia_prestamo)
-    print("Día límite de devolución:", dia_limite)
+    print("Fecha límite de devolución:", str(dia_limite) + "/" + str(mes_limite))
     print("Stock disponible actualizado:", libro_encontrado["stock_disponible"])
 
 
@@ -439,7 +509,7 @@ def registrar_devolucion(libros, prestamos):
         print("No hay préstamos registrados.")
         return
 
-    id_prestamo = validar_entero("Ingrese el ID del préstamo a devolver: ")
+    id_prestamo = validar_entero_positivo("Ingrese el ID del préstamo a devolver: ")
     prestamo_encontrado = obtener_prestamo(prestamos, id_prestamo)
 
     if prestamo_encontrado is None:
@@ -451,13 +521,17 @@ def registrar_devolucion(libros, prestamos):
         return
 
     dia_devolucion = validar_dia("Ingrese el día de devolución: ")
+    mes_devolucion = validar_mes("Ingrese el mes de devolución: ")
 
     multa, dias_demora = calcular_multa(
-        prestamo_encontrado["dia_prestamo"],
-        dia_devolucion
+    prestamo_encontrado["dia_prestamo"],
+    prestamo_encontrado["mes_prestamo"],
+    dia_devolucion,
+    mes_devolucion
     )
 
     prestamo_encontrado["dia_devolucion"] = dia_devolucion
+    prestamo_encontrado["mes_devolucion"] = mes_devolucion
     prestamo_encontrado["estado"] = "DEVUELTO"
     prestamo_encontrado["multa"] = multa
     guardar_prestamos(prestamos)
@@ -473,7 +547,7 @@ def registrar_devolucion(libros, prestamos):
     print("ID del libro devuelto:", prestamo_encontrado["id_libro"])
     print("Día de préstamo:", prestamo_encontrado["dia_prestamo"])
     print("Día límite de devolución:", prestamo_encontrado["dia_limite"])
-    print("Día de devolución:", dia_devolucion)
+    print("Fecha de devolución:", str(dia_devolucion) + "/" + str(mes_devolucion))
 
     if libro_devuelto is not None:
         print("Libro:", libro_devuelto["titulo"])
@@ -524,8 +598,17 @@ def listar_prestamos_activos(libros, usuarios, prestamos):
             if libro_encontrado is not None:
                 print("Libro:", libro_encontrado["titulo"])
 
-            print("Día del préstamo:", datos_prestamo["dia_prestamo"])
-            print("Día límite de devolución:", datos_prestamo["dia_limite"])
+                print(
+                "Fecha de préstamo:",
+                str(datos_prestamo["dia_prestamo"]) + "/" +
+                str(datos_prestamo["mes_prestamo"])
+                )
+
+                print(
+                "Fecha límite:",
+                str(datos_prestamo["dia_limite"]) + "/" +
+                str(datos_prestamo["mes_limite"])
+                )
             print("Estado:", datos_prestamo["estado"])
             print("----------------------------------------")
 
@@ -595,7 +678,7 @@ def main():
 
     while opcion != "9":
         mostrar_menu()
-        opcion = input("Seleccione una opción: ")
+        opcion = input("Seleccione una opción: ").strip()
 
         if opcion == "1":
             registrar_libro(libros)

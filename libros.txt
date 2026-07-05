@@ -1,5 +1,10 @@
 1|El principito|Antoine de Saint-Exupéry|Novela|4|4|0
-2|Don Quijote de la Mancha|Miguel de Cervantes|Sátira|3|2|1
+2|Don Quijote de la Mancha|Miguel de Cervantes|Sátira|3|3|2
 3|Cien años de soledad|Gabriel García Márquez|Novela|3|3|1
 4|Ficciones|Jorge Luis Borges|Cuentos|1|1|0
-5|La metamorfosis|Franz Kafka|Novela|3|2|1
+5|La metamorfosis|Franz Kafka|Novela|3|2|2
+6|Enfócate|Cal Newport|Desarrollo Personal|5|5|1
+7|Martín Fierro|José Hernández|Poesía Gauchesca|3|3|0
+8|Rebelión en la Granja|George Orwell|Sátira Politica|4|3|2
+9|El extraño caso del Dr Jekyll y Mr Hyde|Robert L Stevenson|Terror|6|6|0
+10|Padre Rico, Padre Pobre|Robert Kiyosaki|Finanzas|8|8|1
